@@ -120,7 +120,7 @@ void dfsrog_1(char *host)
 			if (words[1] != NULL && (strcmp(words[1], "-l") == 0))
 			{
 				dirtry.flag = 0;
-				words[1] = ".";
+				words[1] = (words[2] != NULL)? words[2] : ".";
 				dir_open = openlist_1(&words[1], clnt);
 				if (*dir_open == 0)
 				{
@@ -183,7 +183,7 @@ void dfsrog_1(char *host)
 					clnt_perror(clnt, "error occur when close dirctory ls failed");
 				}
 			}
-			else
+			else if(words[1] != NULL && cnt <3)
 			{
 				if (words[1] == NULL)
 				{
