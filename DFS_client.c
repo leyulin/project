@@ -183,7 +183,7 @@ void dfsrog_1(char *host)
 					clnt_perror(clnt, "error occur when close dirctory ls failed");
 				}
 			}
-			else if(words[1] != NULL && cnt <3)
+			else if(strcmp(words[0], "ls") == 0 && cnt <3)
 			{
 				if (words[1] == NULL)
 				{
