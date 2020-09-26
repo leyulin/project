@@ -1,3 +1,15 @@
+/**
+ * @author: Leyu Lin (Jack)
+ * REDID: 817372914
+ *
+ * @author: Parth Thummar
+ * REDID: 824679473
+ *
+ * All parts of project were attempted and implemented. 
+ * Please see Readme_demo.docx for reference/screenshots. 
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -66,10 +78,10 @@ void dfsrog_1(char *host)
 		prompt();
 		scanf(" %[^\n]", line);
 
-		/* get the first word */
+		/*get the first word*/
 		word = strtok(line, s);
 
-		/* walk through line */
+		/*walk through line*/
 		while (word != NULL)
 		{
 			words[cnt] = word;
@@ -85,7 +97,7 @@ void dfsrog_1(char *host)
 		{
 			++prompt_number;
 		}
-
+		/**getdir returns current working directory as maintained by remote server*/
 		if (strcmp(words[0], "getdir") == 0 && cnt < 2)
 		{
 			getdir_result = getdir_1(words[0], clnt);
@@ -95,8 +107,10 @@ void dfsrog_1(char *host)
 			}
 			printf("getdir succeeded with %s\n", *getdir_result);
 		}
+		/**cd changes the current working directory to the named directory on the server*/
 		else if (strcmp(words[0], "cd") == 0 && cnt < 3)
 		{
+			/**check to make sure directory name is given*/
 			if (cnt < 2)
 			{
 				fprintf(stderr, "directory name is missing\n");
@@ -104,6 +118,7 @@ void dfsrog_1(char *host)
 			else
 			{
 				cd_result = changedir_1(&words[1], clnt);
+				/**check to see if cd function executed*/
 				if (*cd_result == 0)
 				{
 					printf("cd failed\n");
@@ -114,6 +129,7 @@ void dfsrog_1(char *host)
 				}
 			}
 		}
+		/**ls produces output for all files in current directory*/
 		else if (strcmp(words[0], "ls") == 0 && cnt < 4)
 		{
 			nextlist_1_arg = "NONE";
@@ -122,15 +138,17 @@ void dfsrog_1(char *host)
 				dirtry.flag = 0;
 				words[1] = (words[2] != NULL)? words[2] : ".";
 				dir_open = openlist_1(&words[1], clnt);
+				/**checks if directory exitst/opens*/
 				if (*dir_open == 0)
 				{
 					clnt_perror(clnt, "open directory failed");
 				}
 
 				dir_next = nextlist_1(&nextlist_1_arg, clnt);
+				/**continue to check directory until no more files left*/
 				while (dir_next->flag != -1)
 				{
-					/*dictory */
+					/*directory*/
 					if (dir_next->flag == 4)
 					{
 						strcat(dir_next->entryname, "/");
@@ -143,9 +161,10 @@ void dfsrog_1(char *host)
 					dir_next = nextlist_1(&nextlist_1_arg, clnt);
 				}
 				dir_close = closelist_1(&closelist_1_arg, clnt);
+				/**make sure directory closes properly*/
 				if (*dir_close = 0)
 				{
-					clnt_perror(clnt, "error occur when close dirctory ls failed");
+					clnt_perror(clnt, "error occur when close directory ls failed");
 				}
 			}
 			else if (words[1] != NULL && (strchr(words[1], '>') != NULL || strchr(words[1], '<') != NULL || strchr(words[1], '=') != NULL))
@@ -156,17 +175,20 @@ void dfsrog_1(char *host)
 				}
 				dirtry.flag = 0;
 				dir_open = openlist_1(&words[2], clnt);
+				/**check to see if directory failed to open*/
 				if (*dir_open == 0)
 				{
 					clnt_perror(clnt, "open directory failed");
 				}
 				dir_next = nextlist_1(&words[1], clnt);
+				/**check to see if valid command given*/
 				if (dir_next->flag == -10)
 				{
 					clnt_perror(clnt, "invalid command or typo");
 				}
 				else
 				{
+					/**continue to check directory until no more files left*/
 					while (dir_next->flag != -1)
 					{
 						char *tmp = dir_next->entryname;
@@ -178,6 +200,7 @@ void dfsrog_1(char *host)
 					}
 				}
 				dir_close = closelist_1(&closelist_1_arg, clnt);
+				/**make sure directory closed properly*/
 				if (*dir_close = 0)
 				{
 					clnt_perror(clnt, "error occur when close dirctory ls failed");
@@ -191,14 +214,16 @@ void dfsrog_1(char *host)
 				}
 				dirtry.flag = 0;
 				dir_open = openlist_1(&words[1], clnt);
+				/**check to see if directory failed to open*/
 				if (*dir_open == 0)
 				{
 					clnt_perror(clnt, "open directory failed");
 				}
 				dir_next = nextlist_1(&nextlist_1_arg, clnt);
+				/**continue to check directory until no more files left*/
 				while (dir_next->flag != -1)
 				{
-					/*dictory */
+					/*directory*/
 					if (dir_next->flag == 4)
 					{
 						printf("%s/\n", dir_next->entryname);
@@ -210,6 +235,7 @@ void dfsrog_1(char *host)
 					dir_next = nextlist_1(&nextlist_1_arg, clnt);
 				}
 				dir_close = closelist_1(&closelist_1_arg, clnt);
+				/**make sure directory closed properly*/
 				if (*dir_close = 0)
 				{
 					clnt_perror(clnt, "error occur when close dirctory ls failed");
@@ -220,19 +246,21 @@ void dfsrog_1(char *host)
 				fprintf(stderr, "invalid command or typo\n");
 			}
 		}
+		/**put operation copies contents of a local file (on the client) to a remote file on a server*/
 		else if (strcmp(words[0], "put") == 0 && cnt < 4)
 		{
 			if (words[1] != NULL)
 			{
 				local_filename = words[1];
 				clnt_fp = fopen(local_filename, "r");
+				/**check to see if local file is found*/
 				if (clnt_fp == NULL)
 				{
 					clnt_perror(clnt, "local file not found\n");
 				}
 				else
 				{
-					//get total bytes of client file
+					/**get total bytes of client file*/
 					fseek(clnt_fp, 0, SEEK_END);
 					total_bytes = ftell(clnt_fp);
 					cl_fblock.size = total_bytes;
@@ -241,16 +269,18 @@ void dfsrog_1(char *host)
 
 					remote_filename = (words[2] != NULL) ? words[2] : words[1];
 					file_open = openfiletowrite_1(&remote_filename, clnt);
+					/**check to see if remotefile opened*/
 					if (*file_open == 0)
 					{
 						clnt_perror(clnt, "open file failed\n");
 					}
 					else
 					{
-						//iniltize block number
+						/**iniltize block number*/
 						cl_fblock.num_block = 0;
 						while (write_bytes < total_bytes)
 						{
+							/**compare if the remaining bytes are less than byte block size*/
 							if (left_write_bytes < 512)
 							{
 								clnt_fp = fopen(local_filename, "r");
@@ -262,6 +292,7 @@ void dfsrog_1(char *host)
 								fclose(clnt_fp);
 								cl_fblock.size = left_write_bytes;
 								file_write = nextwrite_1(&cl_fblock, clnt);
+								/**check to see if file is written to*/
 								if (*file_write == 0)
 								{
 									fprintf(stderr, "write failed\n");
@@ -270,7 +301,7 @@ void dfsrog_1(char *host)
 							}
 							else
 							{
-								// leave 2 bytes space in case
+								/**leave 2 bytes space in case*/
 								write_bytes = write_bytes + 510;
 								clnt_fp = fopen(local_filename, "r");
 
@@ -280,6 +311,7 @@ void dfsrog_1(char *host)
 								fclose(clnt_fp);
 								++num_block;
 								file_write = nextwrite_1(&cl_fblock, clnt);
+								/**check to see if file is written to*/
 								if (*file_write == 0)
 								{
 									fprintf(stderr, "write failed\n");
@@ -290,6 +322,7 @@ void dfsrog_1(char *host)
 							}
 						}
 						file_close = closefile_1(&closefile_1_arg, clnt);
+						/**check to see if file closed properly*/
 						if (*file_close == 0)
 						{
 							fprintf(stderr, "close file failed\n");
@@ -303,8 +336,10 @@ void dfsrog_1(char *host)
 				fprintf(stderr, "miss file name\n");
 			}
 		}
+		/**get operation transfers data from a remote file through a sequence of nextread() calls with each call needing the address of a block and the count of bytes returned.*/
 		else if (strcmp(words[0], "get") == 0 && cnt < 4)
 		{
+			/**make sure remote file name is given*/
 			if (words[1] == NULL)
 			{
 				fprintf(stderr, "miss file name\n");
@@ -313,6 +348,7 @@ void dfsrog_1(char *host)
 			{
 				local_filename = (words[2] != NULL) ? words[2] : words[1];
 				clnt_fp = fopen(local_filename, "r");
+				/**check to see if local file is found*/
 				if (clnt_fp == NULL)
 				{
 					fprintf(stderr, "%s not found\n", local_filename);
@@ -322,6 +358,7 @@ void dfsrog_1(char *host)
 					fclose(clnt_fp);
 					remote_filename = words[1];
 					file_open = openfiletoread_1(&remote_filename, clnt);
+					/**check to see if file opened properly*/
 					if (*file_open == 0)
 					{
 						clnt_perror(clnt, "read file failed\n");
@@ -333,6 +370,7 @@ void dfsrog_1(char *host)
 						read_bytes = rd_fblock->size;
 						clnt_fp = fopen(local_filename, "w+");
 						int i;
+						/**loop through data block*/
 						for (i = 0; i < num_block; i++)
 						{
 							fwrite(rd_fblock->data, 1, 510, clnt_fp);
@@ -341,6 +379,7 @@ void dfsrog_1(char *host)
 						fwrite(rd_fblock->data, 1, read_bytes - num_block * 510, clnt_fp);
 						fclose(clnt_fp);
 						file_close = closefile_1(&closefile_1_arg, clnt);
+						/**check to see if file closed properly*/
 						if (*file_close == 0)
 						{
 							fprintf(stderr, "close file failed\n");
@@ -351,12 +390,15 @@ void dfsrog_1(char *host)
 				}
 			}
 		}
+		/**randomread operation allows up to 512bytes to be read beginning with an arbitrary byte location.*/
 		else if (strcmp(words[0], "randomread") == 0 && cnt < 5)
 		{
+			/**checks to see if all arguments are given*/
 			if (words[2] == NULL || words[3] == NULL || words[1] == NULL)
 			{
 				fprintf(stderr, "num of bytes missing or start off poistion missing or file name missing\n");
 			}
+			/**checks to see if more than 512bytes are given*/
 			else if (atoi(words[2]) > 512 || atoi(words[3]) > 512)
 			{
 				fprintf(stderr, "maxium is 512 bytes\n");
@@ -365,6 +407,7 @@ void dfsrog_1(char *host)
 			{
 				remote_filename = words[1];
 				file_open = openfiletoread_1(&remote_filename, clnt);
+				/**checks to see if file opened*/
 				if (*file_open == 0)
 				{
 					clnt_perror(clnt, "read file failed\n");
@@ -375,11 +418,13 @@ void dfsrog_1(char *host)
 					cl_fblock.size = atoi(words[3]);
 					rd_fblock = randomread_1(&cl_fblock, clnt);
 					file_close = closefile_1(&closefile_1_arg, clnt);
+					/**check to see if file closed properly*/
 					if (*file_close == 0)
 					{
 						fprintf(stderr, "close file failed\n");
 						exit(1);
 					}
+					/**checks to see if file size limit has reached when transferring bytes*/
 					if (rd_fblock->flag == -1)
 					{
 						printf("you reach the file size limit %ld bytes only transferring %d bytes\n", rd_fblock->size, rd_fblock->rr_bytes);

@@ -1,3 +1,15 @@
+/**
+ * @author: Leyu,Lin (jack)
+ * REDID: 817372914
+ *
+ * @author: Parth Thummar
+ * REDID: 824679473
+ * 
+ * All parts of project were attempted and implemented. 
+ * Please see Readme_demo.docx for reference/screenshots. 
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,6 +25,7 @@
 #include <unistd.h>
 #include "DFS.h"
 
+/**gets and returns directory address*/
 char **
 getdir_1_svc(void *argp, struct svc_req *rqstp)
 {
@@ -25,6 +38,7 @@ getdir_1_svc(void *argp, struct svc_req *rqstp)
 	return &getdir_res;
 }
 
+/**change directory and return bool_t*/
 bool_t *
 changedir_1_svc(char **argp, struct svc_req *rqstp)
 {
@@ -38,6 +52,10 @@ DIR *pdir;
 FILE *fp;
 int bl_cnt = 0;
 
+
+/**file count flie with condition if given*/
+/*prase string to find out what condition given*/
+/*only count files if speficed type=d then count directories*/
 int *filecount_1_svc(char **argp, struct svc_req *rqstp)
 {
 	static int counts;
@@ -64,7 +82,7 @@ int *filecount_1_svc(char **argp, struct svc_req *rqstp)
 	}
 	else
 	{
-		//parse string get operators and operans
+		/**parse string to get operators and operans*/
 		if (strchr(*argp, '>') != NULL)
 		{
 			int cnt = 0;
@@ -310,7 +328,7 @@ int *filecount_1_svc(char **argp, struct svc_req *rqstp)
 		}
 		else
 		{
-			//commmand not found or invliad
+			/**command not found or invalid*/
 			counts = -10;
 		}
 	}
@@ -318,6 +336,7 @@ int *filecount_1_svc(char **argp, struct svc_req *rqstp)
 	counts = tmp;
 	return &counts;
 }
+
 
 bool_t *
 openlist_1_svc(char **argp, struct svc_req *rqstp)
@@ -328,6 +347,10 @@ openlist_1_svc(char **argp, struct svc_req *rqstp)
 	return &op_res;
 }
 
+/*read file return the name and tyep*/
+/*if ls -l return the size, date, name and type*/
+/*if condition given, parse string to find condition*/
+/*return only the name of file /direcctory satified condition*/
 direntry *
 nextlist_1_svc(char **argp, struct svc_req *rqstp)
 {
@@ -365,7 +388,7 @@ nextlist_1_svc(char **argp, struct svc_req *rqstp)
 			return &dir;
 		}
 
-		//parse string get operators and operans
+		/**parse string to get operators and operans*/
 		if (strchr(*argp, '>') != NULL)
 		{
 			int cnt = 0;
@@ -678,6 +701,8 @@ nextread_1_svc(void *argp, struct svc_req *rqstp)
 	return &fb;
 }
 
+/*randomm read from give postion to size sepecified*/
+/*the size can beyond actual size will just return actual size*/
 file_block *
 randomread_1_svc(file_block *argp, struct svc_req *rqstp)
 {
@@ -688,7 +713,7 @@ randomread_1_svc(file_block *argp, struct svc_req *rqstp)
 	rand_fb.rr_bytes = argp->size;
 	rd_bytes = argp->size;
 
-	// cant read beyond the actual size
+	/**can't read beyond the actual size*/
 	if (argp->offset + rd_bytes > rand_fb.size)
 	{
 		rand_fb.flag = -1;

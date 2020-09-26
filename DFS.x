@@ -1,9 +1,24 @@
-const MAXLEN = 255;    /*maxlengthofadirectory/names*/
-const MAXSIZE = 512;  /*maxsizeoffiledata*/
+/**
+ * @author: Leyu Lin(jack)
+ * REDID: 817372914
+ *
+ * @author: Parth Thummar
+ * REDID: 824679473
+ * 
+ * All parts of project were attempted and implemented. 
+ * Please see Readme_demo.docx for reference/screenshots. 
+ *
+ */
 
-/*opaque pointer*/
+/**maxlengthofadirectory/names*/
+const MAXLEN = 255;
+/**maxsizeoffiledata*/
+const MAXSIZE = 512;
+
+/**opaque pointer*/
 typedef struct file_block *fp_block;
 
+/**directory entry structure*/
 struct direntry{
     int flag;
     char entryname[MAXLEN];
@@ -11,7 +26,7 @@ struct direntry{
     char date[MAXLEN];
 };
 
-
+/**file block structure*/
 struct file_block {
     long int size;
     char filename[MAXLEN];
